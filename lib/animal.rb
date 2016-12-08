@@ -1,6 +1,8 @@
-require 'animal/version'
+# Standard Library requirements
+require 'yaml'
 
-# The Animal Puppet ENC
-module Animal
-  # Your code goes here...
-end
+# External requirements
+
+# Internal requirements
+require 'animal/version'
+require 'animal/enc'
