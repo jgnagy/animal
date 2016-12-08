@@ -12,7 +12,7 @@ module Animal
 
       to_enc_output results
     end
-    
+
     def self.to_enc_output(data = {})
       return nil if data.empty?
       data.to_yaml
