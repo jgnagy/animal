@@ -5,4 +5,5 @@ require 'yaml'
 
 # Internal requirements
 require 'animal/version'
+require 'animal/classifier'
 require 'animal/enc'
