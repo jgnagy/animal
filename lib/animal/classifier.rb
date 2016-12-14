@@ -2,7 +2,7 @@ module Animal
   class Classifier
     def initialize(node_name)
       @node_name = node_name
-      @db_path = File.expand_path(File.join('~', '.animal', 'nodes'))
+      @db_path = File.expand_path(File.join(ANIMAL_HOME, 'nodes'))
       FileUtils.mkdir_p(@db_path) unless File.exist?(@db_path)
     end
 

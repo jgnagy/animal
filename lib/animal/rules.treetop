@@ -1,0 +1,110 @@
+module Animal
+  grammar Rules
+    rule conditional_items
+      conditional_item required_space boolean_join required_space conditional_items {
+        def conditions
+          all_nodes = []
+          all_nodes.concat(conditional_item.conditions)
+          all_nodes << {:operator => boolean_join.operator}
+          all_nodes.concat(conditional_items.conditions)
+          all_nodes
+        end
+      }
+      /
+      conditional_item
+    end
+
+    rule boolean_join
+      ( and_keyword / or_keyword ) {
+        def operator
+          text_value.downcase.to_sym
+        end
+      }
+    end
+
+    rule conditional_item
+      plugin_class quoted_text close_bracket space conditional_operator space compared_value {
+        def conditions
+          [{
+            :operator => conditional_operator.value,
+            :plugin => plugin_class.name,
+            :key => quoted_text.content,
+            :value => compared_value.content
+          }]
+        end
+      }
+    end
+
+    rule plugin_class
+      ([A-Z] [a-zA-Z0-9]+) open_bracket {
+        def name
+          elements[0].text_value
+        end
+      }
+    end
+
+    rule compared_value
+      (number / quoted_text)
+    end
+
+    rule open_bracket
+      '['
+    end
+
+    rule close_bracket
+      ']'
+    end
+
+    rule required_space
+      [\s]+
+    end
+
+    rule space
+      [\s]*
+    end
+
+    rule quoted_text
+      '"' text '"' {
+        def content
+          elements[1].content
+        end
+      }
+    end
+
+    rule conditional_operator
+      ('!=' / '>=' / '<=' / '=' / '>' / '<' / like_keyword) {
+        def value
+          text_value.to_sym
+        end
+      }
+    end
+  
+    rule like_keyword
+      [lL] [iI] [kK] [eE]
+    end
+
+    rule and_keyword
+      [aA] [nN] [dD]
+    end
+
+    rule or_keyword
+      [oO] [rR]
+    end
+
+    rule number
+      ('-'? [1-9] [0-9]* / '0') {
+        def content
+          text_value.to_i
+        end
+      }
+    end
+
+    rule text
+      [^"\[\]]* {
+        def content
+          text_value
+        end
+      }
+    end
+  end
+end
