@@ -5,11 +5,14 @@ module Animal
         {
           'dschaaff' => {
             'certname' => 'dschaaff.local',
-            'machine_class' => 'server'
+            'machine_class' => 'server',
+            'os' => 'ubuntu'
           },
           'jgnagy' => {
             'certname' => 'jgnagy.local',
-            'machine_class' => 'desktop'
+            'machine_class' => 'server',
+            'os' => 'darwin',
+            'awesome' => true
           }
         }[node][key]
       end

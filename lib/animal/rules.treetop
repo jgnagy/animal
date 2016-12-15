@@ -1,12 +1,41 @@
 module Animal
   grammar Rules
+    rule parenthesized_conditionals
+      parenthesized_conditional required_space boolean_join required_space parenthesized_conditionals {
+        def conditions
+          all_nodes = {}
+          all_nodes[:conditions]  = []
+          all_nodes[:conjunction] = boolean_join.conjunction
+          all_nodes[:conditions] << parenthesized_conditional.conditions
+          all_nodes[:conditions] << parenthesized_conditionals.conditions
+          all_nodes
+        end
+      }
+      / '(' parenthesized_conditionals ')' {
+        def conditions
+          parenthesized_conditionals.conditions
+        end
+      }
+      / parenthesized_conditional
+    end
+    
+    rule parenthesized_conditional
+      '(' parenthesized_conditional ')' {
+          def conditions
+            parenthesized_conditional.conditions
+          end
+        }
+        / conditional_items
+    end
+
     rule conditional_items
       conditional_item required_space boolean_join required_space conditional_items {
         def conditions
-          all_nodes = []
-          all_nodes.concat(conditional_item.conditions)
-          all_nodes << {:operator => boolean_join.operator}
-          all_nodes.concat(conditional_items.conditions)
+          all_nodes = {}
+          all_nodes[:conditions]  = []
+          all_nodes[:conjunction] = boolean_join.conjunction
+          all_nodes[:conditions] << conditional_item.conditions
+          all_nodes[:conditions] << conditional_items.conditions
           all_nodes
         end
       }
@@ -16,7 +45,7 @@ module Animal
 
     rule boolean_join
       ( and_keyword / or_keyword ) {
-        def operator
+        def conjunction
           text_value.downcase.to_sym
         end
       }
@@ -25,12 +54,12 @@ module Animal
     rule conditional_item
       plugin_class quoted_text close_bracket space conditional_operator space compared_value {
         def conditions
-          [{
+          {
             :operator => conditional_operator.value,
             :plugin => plugin_class.name,
             :key => quoted_text.content,
             :value => compared_value.content
-          }]
+          }
         end
       }
     end
@@ -44,7 +73,7 @@ module Animal
     end
 
     rule compared_value
-      (number / quoted_text)
+      (number / boolean / quoted_text)
     end
 
     rule open_bracket
@@ -74,7 +103,7 @@ module Animal
     rule conditional_operator
       ('!=' / '>=' / '<=' / '=' / '>' / '<' / like_keyword) {
         def value
-          text_value.to_sym
+          text_value.downcase.to_sym
         end
       }
     end
@@ -95,6 +124,14 @@ module Animal
       ('-'? [1-9] [0-9]* / '0') {
         def content
           text_value.to_i
+        end
+      }
+    end
+
+    rule boolean
+      ('true' / 'false') {
+        def content
+          text_value == 'true'
         end
       }
     end
