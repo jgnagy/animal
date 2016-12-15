@@ -22,7 +22,7 @@ module Animal
         # TODO look this up in a configuration somewhere
         'production'
       when 'classes'
-        Rule.apply_all_for(@node_name) 
+        Rule.apply_all_for(@node_name)
       when 'parameters'
         []
       else
