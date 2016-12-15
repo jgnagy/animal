@@ -84,7 +84,7 @@ module Animal
       evaluate(node, parse) ? @when_true : @when_false
     rescue => e
       # TODO: output something for debugging here since evaluate failed to run
-      STDERR.puts "Exception occurred on Rule#apply_for(#{node}) for `#{parse}`: #{e.message}"
+      STDERR.puts "Exception occurred on Rule#apply_for(#{node}) for `#{@statement}`: #{e.message}"
       {}
     end
 
