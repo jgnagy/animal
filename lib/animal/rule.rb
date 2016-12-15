@@ -50,11 +50,11 @@ module Animal
     # rubocop:disable Metrics/AbcSize
     def evaluate(node, condition)
       plugin = get_plugin_class(condition[:plugin]) if condition.key?(:plugin)
-      if [:and, :or].include? condition[:conjunction]
+      if [:and, :or].include?(condition[:conjunction])
         recurse_on_conjunction(node, condition[:conditions], condition[:conjunction])
       elsif condition[:operator] == :like
         # Use the plugin to lookup a key and match it against the condition's value
-        plugin.get(node, condition[:key]).match condition[:value]
+        plugin.get(node, condition[:key]).match(condition[:value]) ? true : false
       elsif condition[:operator] == '='.to_sym
         plugin.get(node, condition[:key]) == condition[:value]
       elsif ['!=', '>=', '<=', '>', '<'].include?(condition[:operator].to_s)
@@ -65,21 +65,20 @@ module Animal
     end
 
     def recurse_on_conjunction(node, conditions, conjunction)
-      if conjunction == :all
-        subresult = nil
+      subresult = nil
+      if conjunction == :and
         conditions.each do |subcondition|
           subresult = evaluate(node, subcondition)
           break if subresult.is_a? FalseClass
         end
-        subresult
       elsif conjunction == :or
         subresult = nil
         conditions.each do |subcondition|
           subresult = evaluate(node, subcondition)
           break if subresult.is_a? TrueClass
         end
-        subresult
       end
+      subresult ? true : false
     end
 
     def apply_for(node)

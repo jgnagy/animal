@@ -137,7 +137,7 @@ module Animal
     end
 
     rule text
-      [^"\[\]]* {
+      [^"]* {
         def content
           text_value
         end
