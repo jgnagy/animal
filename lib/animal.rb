@@ -1,4 +1,5 @@
 ANIMAL_HOME = ENV['ANIMAL_HOME'] ?  ENV['ANIMAL_HOME'] : File.expand_path(File.join('~', '.animal'))
+FileUtils.mkdir_p(ANIMAL_HOME) unless File.exist?(ANIMAL_HOME)
 
 # Standard Library requirements
 require 'yaml'
