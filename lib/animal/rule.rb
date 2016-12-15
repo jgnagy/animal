@@ -6,6 +6,8 @@ module Animal
 
   # The basis for the rules engine used for classifying nodes
   class Rule
+    attr_reader :when_true, :when_false
+
     def self.all
       rules = []
       Dir.chdir File.expand_path(File.join(ANIMAL_HOME, 'rules.db')) do
