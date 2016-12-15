@@ -1,6 +1,7 @@
 module Animal
   module Plugins
-    class Fact < Plugin
+    # The Facter integration inventory plugin mock-up
+    class Fact < InventoryPlugin
       def self.get(node, key)
         {
           'dschaaff' => {

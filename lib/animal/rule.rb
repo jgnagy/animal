@@ -1,20 +1,21 @@
+# The Animal namespace module
 module Animal
   ## Treetop Rules Parsing
   dir = File.expand_path(File.dirname(__FILE__))
   Treetop.load File.expand_path(File.join(dir, 'rules'))
 
-  # Actual Rule class
+  # The basis for the rules engine used for classifying nodes
   class Rule
     def self.all
       rules = []
       Dir.chdir File.expand_path(File.join(ANIMAL_HOME, 'rules.db')) do
         Dir.glob('*.yml').each do |rule_file|
           YAML.load_file(rule_file).each do |data|
-            if data.key?(:failure)
-              rules << Rule.new(data[:statement], data[:success], data[:failure])
-            else
-              rules << Rule.new(data[:statement], data[:success])
-            end
+            rules << if data.key?(:failure)
+                       Rule.new(data[:statement], data[:success], data[:failure])
+                     else
+                       Rule.new(data[:statement], data[:success])
+                     end
           end
         end
       end
@@ -22,7 +23,7 @@ module Animal
     end
 
     def self.apply_all_for(node)
-      operations = {add: [], subtract: []}
+      operations = { add: [], subtract: [] }
       all.each do |rule|
         result = rule.apply_for(node)
         operations[:add].concat result[:add] if result.key?(:add)
@@ -43,51 +44,55 @@ module Animal
       result.conditions
     end
 
+    # Used to evaluate the conditions provided by parsing a rule statement
+    # rubocop:disable Metrics/AbcSize
     def evaluate(node, condition)
-      # TODO this is going to take some work for parenthetical expressions
-      result = false
+      plugin = get_plugin_class(condition[:plugin]) if condition.key?(:plugin)
+      if [:and, :or].include? condition[:conjunction]
+        recurse_on_conjunction(node, condition[:conditions], condition[:conjunction])
+      elsif condition[:operator] == :like
+        # Use the plugin to lookup a key and match it against the condition's value
+        plugin.get(node, condition[:key]).match condition[:value]
+      elsif condition[:operator] == '='.to_sym
+        plugin.get(node, condition[:key]) == condition[:value]
+      elsif ['!=', '>=', '<=', '>', '<'].include?(condition[:operator].to_s)
+        plugin.get(node, condition[:key]).send(condition[:operator], condition[:value])
+      else
+        false
+      end
+    end
 
-      case
-      when condition[:conjunction] == :and
+    def recurse_on_conjunction(node, conditions, conjunction)
+      if conjunction == :all
         subresult = nil
-        condition[:conditions].each do |subcondition|
+        conditions.each do |subcondition|
           subresult = evaluate(node, subcondition)
           break if subresult.is_a? FalseClass
         end
-        result = subresult
-      when condition[:conjunction] == :or
+        subresult
+      elsif conjunction == :or
         subresult = nil
-        condition[:conditions].each do |subcondition|
+        conditions.each do |subcondition|
           subresult = evaluate(node, subcondition)
           break if subresult.is_a? TrueClass
         end
-        result = subresult
-      when condition[:operator] == :like
-        # Constantize the plugin based on the class name
-        class_name = "Animal::Plugins::#{condition[:plugin]}"
-        plugin = Class.const_get(class_name)
-        # Use the plugin to lookup a key and match it against the condition's value
-        result = plugin.get(node, condition[:key]).match condition[:value]
-      when condition[:operator] == '='.to_sym
-        class_name = "Animal::Plugins::#{condition[:plugin]}"
-        plugin = Class.const_get(class_name)
-        result = plugin.get(node, condition[:key]) == condition[:value]
-      when ['!=', '>=', '<=', '>', '<'].include?(condition[:operator].to_s)
-        class_name = "Animal::Plugins::#{condition[:plugin]}"
-        plugin = Class.const_get(class_name)
-        result = plugin.get(node, condition[:key]).send(condition[:operator], condition[:value])
+        subresult
       end
-
-      result
     end
 
     def apply_for(node)
-      begin
-        evaluate(node, parse) ? @when_true : @when_false
-      rescue => e
-        # TODO output something for debugging here since evaluate failed to run
-        {}
-      end
+      evaluate(node, parse) ? @when_true : @when_false
+    rescue => e
+      # TODO: output something for debugging here since evaluate failed to run
+      STDERR.puts "Exception occurred on Rule#apply_for(#{node}) for `#{parse}`: #{e.message}"
+      {}
+    end
+
+    private
+
+    # Constantize the plugin based on the class name
+    def get_plugin_class(name)
+      Class.const_get("Animal::Plugins::#{name}")
     end
   end
 end

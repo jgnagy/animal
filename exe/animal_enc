@@ -5,7 +5,7 @@ require 'animal'
 node_name = ARGV[0]
 
 # Must pass a node name
-raise "Missing Node Name" unless node_name
+raise 'Missing Node Name' unless node_name
 
 results = Animal::ENC.query(node_name, debug: true)
 exit unless results # no output on empty results

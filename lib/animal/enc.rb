@@ -1,6 +1,7 @@
 module Animal
+  # As Animal is an ENC, this is the main class and entry point for Animal.
   class ENC
-    def self.query(node_name, opts = {})
+    def self.query(node_name, _opts = {})
       classifier  = Classifier.new(node_name)
       classes     = classifier.classes
       parameters  = classifier.parameters
