@@ -18,7 +18,7 @@ module Animal
       }
       / parenthesized_conditional
     end
-    
+
     rule parenthesized_conditional
       '(' parenthesized_conditional ')' {
           def conditions
@@ -107,7 +107,7 @@ module Animal
         end
       }
     end
-  
+
     rule like_keyword
       [lL] [iI] [kK] [eE]
     end
