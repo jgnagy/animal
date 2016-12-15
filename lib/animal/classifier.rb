@@ -24,7 +24,7 @@ module Animal
       when 'classes'
         Rule.apply_all_for(@node_name)
       when 'parameters'
-        []
+        nil
       else
         raise 'Not Implemented'
       end
