@@ -10,16 +10,12 @@ module Animal
 
     def self.all
       rules = []
-      Dir.chdir File.expand_path(File.join(ANIMAL_HOME, 'rules.db')) do
-        Dir.glob('*.yml').each do |rule_file|
-          YAML.load_file(rule_file).each do |data|
-            rules << if data.key?(:failure)
-                       Rule.new(data[:statement], data[:success], data[:failure])
-                     else
-                       Rule.new(data[:statement], data[:success])
-                     end
-          end
-        end
+      Animal::Plugins::Storage::Yaml.all('rules').each do |data|
+        rules << if data.key?(:failure)
+                   Rule.new(data[:statement], data[:success], data[:failure])
+                 else
+                   Rule.new(data[:statement], data[:success])
+                 end
       end
       rules
     end
@@ -93,7 +89,7 @@ module Animal
 
     # Constantize the plugin based on the class name
     def get_plugin_class(name)
-      Class.const_get("Animal::Plugins::#{name}")
+      Class.const_get("Animal::Plugins::Inventory::#{name}")
     end
   end
 end
