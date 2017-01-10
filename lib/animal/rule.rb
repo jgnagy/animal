@@ -50,7 +50,7 @@ module Animal
         recurse_on_conjunction(node, condition[:conditions], condition[:conjunction])
       elsif condition[:operator] == :like
         # Use the plugin to lookup a key and match it against the condition's value
-        plugin.get(node, condition[:key]).match(condition[:value]) ? true : false
+        plugin.get(node, condition[:key]).match(sanitize_regexp(condition[:value])) ? true : false
       elsif condition[:operator] == '='.to_sym
         plugin.get(node, condition[:key]) == condition[:value]
       elsif ['!=', '>=', '<=', '>', '<'].include?(condition[:operator].to_s)
@@ -75,6 +75,10 @@ module Animal
         end
       end
       subresult ? true : false
+    end
+
+    def sanitize_regexp(value)
+      value.delete(%r{'(^/|/$)'})
     end
 
     def apply_for(node)

@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'yaml'
+
 path_to_nodes_pp = ARGV[0]
 
 file_content = File.read(File.expand_path(path_to_nodes_pp))
@@ -12,4 +14,19 @@ file_content.scan(/(^|\n)node ([^\s]+) ?\{([^}]+)\n(\s+)?\}/).each do |node|
   nodes[name] = includes
 end
 
-nodes.each { |k, v| puts "#{k} => [#{v.join(', ')}]" }
+#nodes.each { |k, v| puts "#{k} => [#{v.join(', ')}]" }
+
+rules = []
+nodes.each do |name, roles_and_profiles|
+  rule = {}
+  if name.match(%r{^/.+/$})
+    rule[:condition] = "Fact[\"certname\"] LIKE \"#{name}\""
+  else
+    rule[:condition] = "Fact[\"certname\"] = \"#{name.gsub(%r{(^['"]|['"]$)}, '')}\""
+  end
+
+  rule[:success] = { add: roles_and_profiles }
+  rules << rule
+end
+
+puts rules.to_yaml
