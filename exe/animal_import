@@ -8,8 +8,8 @@ nodes = {}
 
 file_content.scan(/(^|\n)node ([^\s]+) ?\{([^}]+)\n(\s+)?\}/).each do |node|
   name = node[1]
-  includes = node[2].gsub("\n", '').split(/\s+include\s+/).select { |x| !x.empty? }.compact
+  includes = node[2].delete("\n").split(/\s+include\s+/).select { |x| !x.empty? }.compact
   nodes[name] = includes
 end
 
-nodes.each {|k,v| puts "#{k} => [#{v.join(', ')}]"}
+nodes.each { |k, v| puts "#{k} => [#{v.join(', ')}]" }
