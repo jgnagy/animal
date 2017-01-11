@@ -78,7 +78,7 @@ module Animal
     end
 
     def sanitize_regexp(value)
-      value.delete(%r{'(^/|/$)'})
+      value.gsub(%r{(^/|/$)}, '')
     end
 
     def apply_for(node)

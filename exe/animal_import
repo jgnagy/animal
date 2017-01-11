@@ -20,9 +20,9 @@ rules = []
 nodes.each do |name, roles_and_profiles|
   rule = {}
   if name =~ %r{^/.+/$}
-    rule[:condition] = "Fact[\"certname\"] LIKE \"#{name}\""
+    rule[:statement] = "Fact[\"certname\"] LIKE \"#{name}\""
   else
-    rule[:condition] = "Fact[\"certname\"] = \"#{name.gsub(/(^['"]|['"]$)/, '')}\""
+    rule[:statement] = "Fact[\"certname\"] = \"#{name.gsub(/(^['"]|['"]$)/, '')}\""
   end
 
   rule[:success] = { add: roles_and_profiles }
