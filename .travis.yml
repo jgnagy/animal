@@ -1,6 +1,14 @@
 sudo: false
 language: ruby
 rvm:
-  - 2.2.5
-  - 2.3.1
+- 2.2.5
+- 2.3.1
 before_install: gem install bundler -v 1.12.5
+deploy:
+  provider: rubygems
+  api_key:
+    secure: Bvix9+hJrZhd9GTYZQ7yN+htm+iWpBigVdVybAu6NHx1+YwJbelCQ68hN1gpFI/bSTdUlaQup9M1SW2Nb4fzwGB2byya9bIgjrez6vDuZ6SbwrXnTVZ/w1lpDG2ZaPRDVYet7+Xn1WTEwDm/ANeL7Gi5CDB87w6vu/vBfoWcKU4jLZcAgVtZ1TlfBnM1rKKC896/Dt4wVh1PLDuKfx8XuLNFR4VCLjIM1S3vKD9vl/8VzuxJcZLCgRbNs5CmidQNPe3zEkTO9hvg1/p9UY6OardNeEPbkKNDNITJ5gggX6chZtni+1qYIWmeUHuo80PwrB/J1gODDkl4kmNtRdpf6UGbi/hJbXM7vDWr5VQzKmVVbHoNYaLWmnWCcmtRD0zk0BTEfemwFzqANKXpRFvQRvfwhLjwpg/agaKUwVzWoLHo3QBEbrMSsamY2uQcIlHxMgofrPVfDD+puLFOANKJB/M2Vrr6cVdGziavizYHPhRxXxr1/23oiOLk0B61PzfOZLKdk1v2/uPF44WkGSiqvvNJIJjw80EhNIFNGhDxlyZsM2z+1+CrW5FkaVlPS9mnVS6H21xHKLVWYwGLpAdG80YasVmGGpDXxEdHPpsn2qmFqSJWOPSPqsbb4FYKDnrCqYIYwESg6hNI7XDN65Bet3g/ve61D0K9EKeKAfdaNo4=
+  gem: animal
+  on:
+    tags: true
+    repo: knuedge/animal
