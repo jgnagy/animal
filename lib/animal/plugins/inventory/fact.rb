@@ -21,11 +21,12 @@ module Animal
         end
         # method for reading facts into ruby here
         # use facts yaml in /opt/puppetlabs/server/data/puppetserver/yaml/facts
-        # TODO: make that dir a config option
+        # TODO: make that dir ^^ a config option
         # TODO: consider slurping in all fact files and cache them
+
         def read_facts(certname)
-          fact_file = "/opt/puppetlabs/server/data/puppetserver/yaml/facts/#{certname}"
-          fact_data = ::YAML.load_file(fact_file)
+          fact_file = File.read("/opt/puppetlabs/server/data/puppetserver/yaml/facts/#{certname}")
+          fact_data = ::YAML.load_file(fact_file.gsub(/\!ruby\/object.*$/,''))
         end
       end
     end
