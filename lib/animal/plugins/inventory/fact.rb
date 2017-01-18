@@ -26,7 +26,7 @@ module Animal
         # TODO: fix key to account for nested facts
         def self.get(certname, key)
           fact_file = File.read("/opt/puppetlabs/server/data/puppetserver/yaml/facts/#{certname}.yaml")
-          fact_data = ::YAML.load_file(fact_file.gsub(/\!ruby\/object.*$/, ''))
+          fact_data = ::YAML.load(fact_file.gsub(/\!ruby\/object.*$/, ''))
           fact_data[key]
         end
       end
