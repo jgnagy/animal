@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe Animal::Rule do
   context 'given a simple rule statement' do
-    subject { Animal::Rule.new('Fact["test"] = true', add: ['role::test']) }
+    subject { Animal::Rule.new('Fact["test.bar"] = true', add: ['role::test']) }
 
     it 'should parse correctly' do
-      correct_result = { operator: :"=", plugin: 'Fact', key: 'test', value: true }
+      correct_result = { operator: :"=", plugin: 'Fact', key: 'test.bar', value: true }
       expect(subject.parse).to eq(correct_result)
     end
   end
